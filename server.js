@@ -165,19 +165,6 @@ async function sendEmailNotification(enquiry) {
   }
 }
 
-async function sendSMSNotification(enquiry) {
-  if (!process.env.FAST2SMS_KEY || !process.env.CONTACT_PHONE2) return;
-  try {
-    const phone = process.env.CONTACT_PHONE2.replace(/^91/, '');
-    const msg = `New enquiry on your website! Name: ${enquiry.name}, Phone: ${enquiry.phone}, Service: ${enquiry.service}. -Navin Construction`;
-    const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${process.env.FAST2SMS_KEY}&message=${encodeURIComponent(msg)}&language=english&route=q&numbers=${phone}`;
-    const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
-    const data = await res.json();
-    console.log('SMS notification:', data.message?.[0] || JSON.stringify(data));
-  } catch (err) {
-    console.error('SMS notification failed:', err.message);
-  }
-}
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── Input sanitization ───────────────────────────────────────────────────────
@@ -233,9 +220,8 @@ app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
   await saveEnquiry(enquiry);
   console.log(`New enquiry: ${name} (${email})`);
 
-  // Send notifications (non-blocking — won't affect response if they fail)
+  // Send email notification (non-blocking — won't affect response if it fails)
   sendEmailNotification(enquiry).catch(() => {});
-  sendSMSNotification(enquiry).catch(() => {});
 
   res.json({
     success: true,
