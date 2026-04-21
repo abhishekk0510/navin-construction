@@ -152,19 +152,43 @@ async function findById(id) {
   return list.find(e => e.id === id) || null;
 }
 
+function phoneMatch(storedDigits, searchDigits) {
+  if (storedDigits === searchDigits) return true;
+  // Handle country code variations: 919876543210 ↔ 9876543210
+  return storedDigits.endsWith(searchDigits) || searchDigits.endsWith(storedDigits);
+}
+
+function matchNorm(e, normPhone, normName, normSvc) {
+  const p = e.normPhone || (e.phone   || '').replace(/\D/g, '');
+  const n = e.normName  || (e.name    || '').toLowerCase().trim().replace(/\s+/g, ' ');
+  const s = e.normSvc   || (e.service || 'general').toLowerCase().trim();
+  return phoneMatch(p, normPhone) && n === normName && s === normSvc;
+}
+
 async function findByNormalized(normPhone, normName, normSvc) {
   const database = await connectDB();
   if (database) {
-    return database.collection('enquiries')
+    // Fast path: new records have pre-stored normalized fields
+    const fast = await database.collection('enquiries')
       .find({ normPhone, normName, normSvc }, { projection: { _id: 0 } })
       .sort({ submittedAt: -1 })
       .limit(1)
       .next();
+    if (fast) return fast;
+
+    // Fallback for old records: fetch all and normalize in memory
+    // (dataset is small for a construction company — safe to do this)
+    const all = await database.collection('enquiries')
+      .find({}, { projection: { _id: 0 } })
+      .toArray();
+    return all
+      .filter(e => matchNorm(e, normPhone, normName, normSvc))
+      .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))[0] || null;
   }
   ensureLocalFile();
   const list = JSON.parse(fs.readFileSync(ENQUIRIES_FILE, 'utf8'));
   return list
-    .filter(e => e.normPhone === normPhone && e.normName === normName && e.normSvc === normSvc)
+    .filter(e => matchNorm(e, normPhone, normName, normSvc))
     .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))[0] || null;
 }
 
