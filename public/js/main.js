@@ -40,18 +40,27 @@ const i18n = {
     'hero.btn.quote':'Get Free Quote','hero.btn.projects':'View Projects',
     'about.eyebrow':'About Us',
     'services.eyebrow':'What We Do','services.h2':'Our <span class="hl">Construction Services</span>',
-    'whyus.eyebrow':'Why Choose Us',
+    'services.desc':'From planning to project handover — complete solutions so you don\'t have to worry about anything.',
+    'whyus.eyebrow':'Why Choose Us','whyus.h2':'The <span class="hl">Navin Developer</span> Difference',
+    'whyus.desc':'We don\'t just build structures — we build trust, lasting value, and relationships for every single client.',
     'projects.eyebrow':'Our Portfolio','projects.h2':'Featured <span class="hl">Projects</span>',
+    'projects.desc':'A selection of our work across Najafgarh and Delhi NCR — residential, commercial, and renovation.',
     'process.eyebrow':'How We Work','process.h2':'Our <span class="hl">Construction Process</span>',
+    'process.desc':'A clear, transparent process — no confusion, no surprises. Just results.',
     'videos.eyebrow':'Watch & Learn','videos.h2':'Construction <span class="hl">Videos</span>',
+    'videos.desc':'Watch construction timelapses, renovation transformations, and expert construction insights.',
     'testimonials.eyebrow':'Client Reviews','testimonials.h2':'What Our <span class="hl">Clients Say</span>',
+    'testimonials.desc':'Real words from real clients across Najafgarh and Delhi NCR.',
     'enquiry.eyebrow':'Get In Touch','enquiry.h2':'Request a <span class="hl">Free Quote</span>',
     'enquiry.desc':'Tell us about your project — we will visit your site and provide a detailed, written estimate within 24 hours. Absolutely free.',
     'form.h3':'Send Your Requirements',
     'form.name':'Full Name','form.phone':'Phone / WhatsApp','form.email':'Email Address',
     'form.service':'Service Required','form.budget':'Estimated Budget',
     'form.location':'Project Location / Area','form.message':'Project Details',
-    'form.submit':'Submit Enquiry',
+    'form.ph.name':'Your full name','form.ph.phone':'+91 XXXXX XXXXX',
+    'form.ph.email':'your@email.com','form.ph.location':'e.g. Najafgarh, Dwarka, Uttam Nagar...',
+    'form.ph.message':'Type of work, plot size, number of floors, special requirements...',
+    'form.submit':'Submit Enquiry','form.sending':'Sending...',
     'form.note':'Your information is 100% safe. We never share your data.',
     'form.success.h3':'Received!',
     'form.success.p':'Navin ji will call you within <strong>24 hours</strong> for a free site visit.',
@@ -67,18 +76,27 @@ const i18n = {
     'hero.btn.quote':'मुफ्त कोटेशन पाएं','hero.btn.projects':'प्रोजेक्ट देखें',
     'about.eyebrow':'हमारे बारे में',
     'services.eyebrow':'हम क्या करते हैं','services.h2':'हमारी <span class="hl">निर्माण सेवाएं</span>',
-    'whyus.eyebrow':'हमें क्यों चुनें',
+    'services.desc':'योजना से प्रोजेक्ट हैंडओवर तक — संपूर्ण समाधान, कोई चिंता नहीं।',
+    'whyus.eyebrow':'हमें क्यों चुनें','whyus.h2':'<span class="hl">नवीन डेवलपर</span> की विशेषता',
+    'whyus.desc':'हम सिर्फ इमारतें नहीं बनाते — हम विश्वास, स्थायी मूल्य और रिश्ते बनाते हैं।',
     'projects.eyebrow':'हमारा पोर्टफोलियो','projects.h2':'हमारे <span class="hl">प्रमुख प्रोजेक्ट्स</span>',
+    'projects.desc':'नजफगढ़ और दिल्ली NCR में हमारे काम की झलक — आवासीय, व्यावसायिक और नवीनीकरण।',
     'process.eyebrow':'हम कैसे काम करते हैं','process.h2':'हमारी <span class="hl">निर्माण प्रक्रिया</span>',
+    'process.desc':'स्पष्ट और पारदर्शी प्रक्रिया — कोई भ्रम नहीं, कोई आश्चर्य नहीं।',
     'videos.eyebrow':'देखें और जानें','videos.h2':'निर्माण <span class="hl">वीडियो</span>',
+    'videos.desc':'निर्माण टाइमलैप्स, नवीनीकरण और विशेषज्ञ जानकारी देखें।',
     'testimonials.eyebrow':'ग्राहक समीक्षाएं','testimonials.h2':'हमारे <span class="hl">ग्राहक क्या कहते हैं</span>',
+    'testimonials.desc':'नजफगढ़ और दिल्ली NCR के असली ग्राहकों के असली शब्द।',
     'enquiry.eyebrow':'संपर्क करें','enquiry.h2':'<span class="hl">मुफ्त कोटेशन</span> के लिए पूछें',
     'enquiry.desc':'अपने प्रोजेक्ट के बारे में बताएं — हम 24 घंटे में साइट विजिट करके लिखित अनुमान देंगे। बिल्कुल मुफ्त।',
     'form.h3':'अपनी जरूरत बताएं',
     'form.name':'पूरा नाम','form.phone':'फोन / व्हाट्सऐप','form.email':'ईमेल पता',
     'form.service':'सेवा चुनें','form.budget':'अनुमानित बजट',
     'form.location':'प्रोजेक्ट का स्थान','form.message':'प्रोजेक्ट का विवरण',
-    'form.submit':'जानकारी भेजें',
+    'form.ph.name':'आपका पूरा नाम','form.ph.phone':'+91 XXXXX XXXXX',
+    'form.ph.email':'your@email.com','form.ph.location':'जैसे: नजफगढ़, द्वारका, उत्तम नगर...',
+    'form.ph.message':'काम का प्रकार, प्लॉट साइज़, मंजिलें, विशेष आवश्यकताएं...',
+    'form.submit':'जानकारी भेजें','form.sending':'भेज रहे हैं...',
     'form.note':'आपकी जानकारी 100% सुरक्षित है। हम कभी शेयर नहीं करते।',
     'form.success.h3':'मिल गया!',
     'form.success.p':'नवीन जी <strong>24 घंटे</strong> में मुफ्त साइट विजिट के लिए कॉल करेंगे।',
@@ -97,6 +115,10 @@ function setLanguage(lang) {
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const key = el.getAttribute('data-i18n-html');
     if (i18n[lang][key] !== undefined) el.innerHTML = i18n[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (i18n[lang][key] !== undefined) el.placeholder = i18n[lang][key];
   });
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
@@ -136,6 +158,7 @@ const navLinks = document.getElementById('navLinks');
 
 hamburger.addEventListener('click', () => {
   navLinks.classList.toggle('open');
+  hamburger.classList.toggle('open');
   const bars = hamburger.querySelectorAll('span');
   if (navLinks.classList.contains('open')) {
     bars[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
@@ -149,6 +172,7 @@ hamburger.addEventListener('click', () => {
 navLinks.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', () => {
     navLinks.classList.remove('open');
+    hamburger.classList.remove('open');
     hamburger.querySelectorAll('span').forEach(b => { b.style.transform = ''; b.style.opacity = ''; });
   });
 });

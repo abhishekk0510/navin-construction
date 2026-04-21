@@ -265,6 +265,7 @@ ul   { list-style:none; }
   border-radius: 2px;
   transition: var(--transition);
 }
+.hamburger.open span { background: var(--white); }
 
 /* =============================
    HERO
