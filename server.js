@@ -17,27 +17,31 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ---------- Storage abstraction ----------
+// ---------- MongoDB connection (cached for serverless) ----------
 let db = null;
 
-async function initMongo() {
+async function connectDB() {
+  if (db) return db;
+  if (!MONGODB_URI) return null;
   const { MongoClient } = require('mongodb');
   const client = new MongoClient(MONGODB_URI);
   await client.connect();
   db = client.db('buildmaster');
   console.log('Connected to MongoDB Atlas');
+  return db;
 }
 
-const ENQUIRIES_FILE = path.join(__dirname, 'data', 'enquiries.json');
+// ---------- Storage abstraction ----------
+const ENQUIRIES_FILE = path.join('/tmp', 'enquiries.json');
 
 function ensureLocalFile() {
-  if (!fs.existsSync(path.join(__dirname, 'data'))) fs.mkdirSync(path.join(__dirname, 'data'));
   if (!fs.existsSync(ENQUIRIES_FILE)) fs.writeFileSync(ENQUIRIES_FILE, JSON.stringify([], null, 2));
 }
 
 async function saveEnquiry(enquiry) {
-  if (db) {
-    await db.collection('enquiries').insertOne(enquiry);
+  const database = await connectDB();
+  if (database) {
+    await database.collection('enquiries').insertOne(enquiry);
   } else {
     ensureLocalFile();
     const list = JSON.parse(fs.readFileSync(ENQUIRIES_FILE, 'utf8'));
@@ -47,8 +51,9 @@ async function saveEnquiry(enquiry) {
 }
 
 async function getAllEnquiries() {
-  if (db) {
-    return db.collection('enquiries').find({}, { projection: { _id: 0 } }).sort({ submittedAt: -1 }).toArray();
+  const database = await connectDB();
+  if (database) {
+    return database.collection('enquiries').find({}, { projection: { _id: 0 } }).sort({ submittedAt: -1 }).toArray();
   }
   ensureLocalFile();
   return JSON.parse(fs.readFileSync(ENQUIRIES_FILE, 'utf8'));
@@ -109,10 +114,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-async function start() {
-  if (MONGODB_URI) await initMongo();
-  else console.log('No MONGODB_URI set — using local file storage');
+// ---------- Start (local dev) or export (Vercel) ----------
+if (require.main === module) {
   app.listen(PORT, () => console.log(`\nBuildMaster running on http://localhost:${PORT}\n`));
 }
 
-start().catch(err => { console.error(err); process.exit(1); });
+module.exports = app;
