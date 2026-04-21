@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Enquiry | Navin Developer & Construction</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .track-page {
+      min-height: 100vh;
+      background: var(--cream);
+      padding-top: 80px;
+    }
+    .track-hero {
+      background: var(--navy);
+      padding: 48px 0 40px;
+      text-align: center;
+    }
+    .track-hero h1 {
+      color: var(--white);
+      font-size: clamp(26px, 4vw, 38px);
+      margin-bottom: 8px;
+    }
+    .track-hero h1 span { color: var(--gold-lt); }
+    .track-hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 15px;
+    }
+    .track-card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      max-width: 560px;
+      margin: -28px auto 60px;
+      padding: 36px 32px;
+    }
+    .track-tabs {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .track-tab {
+      flex: 1;
+      padding: 11px 8px;
+      background: var(--cream);
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+    .track-tab.active {
+      background: var(--navy);
+      color: var(--gold-lt);
+    }
+    .track-panel { display: none; }
+    .track-panel.active { display: block; }
+    .track-form .form-group { margin-bottom: 16px; }
+    .track-form label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .track-form input,
+    .track-form select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      font-size: 15px;
+      font-family: 'Lato', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+    .track-form input:focus,
+    .track-form select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    .track-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--navy);
+      color: var(--gold-lt);
+      border: none;
+      border-radius: var(--r);
+      font-family: 'Lato', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      margin-top: 4px;
+    }
+    .track-btn:hover { background: #0d1f3c; }
+    .track-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .track-note {
+      font-size: 12px;
+      color: var(--text-light);
+      text-align: center;
+      margin-top: 14px;
+    }
+    .track-note a { color: var(--gold); text-decoration: underline; }
+    /* Result box */
+    #trackResult { display: none; margin-top: 24px; }
+    .result-card {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .result-header {
+      background: var(--navy);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .result-header h4 {
+      color: var(--white);
+      font-size: 16px;
+      margin: 0;
+      font-family: 'Lato', sans-serif;
+    }
+    .status-pill {
+      margin-left: auto;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-new {
+      background: rgba(201, 168, 76, 0.2);
+      color: var(--gold-lt);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+    }
+    .status-acknowledged {
+      background: rgba(40, 167, 69, 0.15);
+      color: #28a745;
+      border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    .result-body { padding: 20px; }
+    .result-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--cream-dk);
+      font-size: 14px;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-row .rl { color: var(--text-light); min-width: 120px; }
+    .result-row .rv { color: var(--text); font-weight: 600; }
+    .ref-id-small {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-light);
+      word-break: break-all;
+    }
+    .ack-banner {
+      background: #f0faf3;
+      border: 1px solid #c3e6cb;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #276b3a;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pending-banner {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #7a5700;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .error-banner {
+      background: #fff0f0;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      padding: 16px 20px;
+      color: #8b1f1f;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    /* Minimal navbar for this page */
+    .track-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--navy);
+      z-index: 1000;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .track-nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .track-nav-logo .icon {
+      color: var(--gold-lt);
+      font-size: 20px;
+    }
+    .track-nav-logo strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      color: var(--white);
+    }
+    .track-nav-back {
+      color: var(--gold-lt);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+    .track-nav-back:hover { opacity: 0.75; }
+    @media (max-width: 600px) {
+      .track-card { margin: -20px 16px 40px; padding: 24px 20px; }
+      .result-row { flex-direction: column; gap: 2px; }
+      .result-row .rl { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal Navbar -->
+  <nav class="track-nav">
+    <a href="/" class="track-nav-logo">
+      <span class="icon"><i class="fas fa-hard-hat"></i></span>
+      <strong>Navin Developer &amp; Construction</strong>
+    </a>
+    <a href="/" class="track-nav-back"><i class="fas fa-arrow-left"></i> Back to Home</a>
+  </nav>
+
+  <div class="track-page">
+
+    <!-- Hero -->
+    <div class="track-hero">
+      <div class="container">
+        <h1>Track Your <span>Enquiry Status</span></h1>
+        <p>Check whether your enquiry has been seen by our team</p>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="container">
+      <div class="track-card">
+
+        <!-- Tabs -->
+        <div class="track-tabs">
+          <button class="track-tab active" id="tabById" onclick="switchTab('byId')">
+            <i class="fas fa-hashtag"></i> By Reference ID
+          </button>
+          <button class="track-tab" id="tabByDetails" onclick="switchTab('byDetails')">
+            <i class="fas fa-search"></i> By Your Details
+          </button>
+        </div>
+
+        <!-- Panel: By Ref ID -->
+        <div class="track-panel active" id="panelById">
+          <div class="track-form">
+            <div class="form-group">
+              <label for="inputRef"><i class="fas fa-hashtag"></i> Reference ID</label>
+              <input type="text" id="inputRef" placeholder="Paste your Reference ID here" autocomplete="off" />
+            </div>
+            <button class="track-btn" id="btnById" onclick="searchById()">
+              <i class="fas fa-search"></i> Check Status
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel: By Details -->
+        <div class="track-panel" id="panelByDetails">
+          <div class="track-form">
+            <div class="form-group">
+              <label for="inputPhone"><i class="fas fa-phone"></i> Phone / WhatsApp <span style="color:#c0392b">*</span></label>
+              <input type="tel" id="inputPhone" placeholder="+91 XXXXX XXXXX" autocomplete="tel" />
+            </div>
+            <div class="form-group">
+              <label for="inputName"><i class="fas fa-user"></i> Full Name <span style="color:#c0392b">*</span></label>
+              <input type="text" id="inputName" placeholder="Exactly as entered in enquiry" autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label for="inputService"><i class="fas fa-tools"></i> Service Type <span style="color:#c0392b">*</span></label>
+              <select id="inputService">
+                <option value="">Select the service you enquired about</option>
+                <option value="Residential Construction">Residential Construction</option>
+                <option value="Commercial Construction">Commercial Construction</option>
+                <option value="Renovation & Remodeling">Renovation &amp; Remodeling</option>
+                <option value="Planning & Design">Planning &amp; Design</option>
+                <option value="Interior Work">Interior Work &amp; Fit-Out</option>
+                <option value="Project Management">Project Management</option>
+                <option value="Other">Other</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+            <button class="track-btn" id="btnByDetails" onclick="searchByDetails()">
+              <i class="fas fa-search"></i> Check Status
+            </button>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="trackResult"></div>
+
+        <p class="track-note">
+          Don't have a reference ID? <a href="/#enquiry">Submit an enquiry</a> and save the ID shown on the confirmation screen.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('panelById').classList.toggle('active', tab === 'byId');
+      document.getElementById('panelByDetails').classList.toggle('active', tab === 'byDetails');
+      document.getElementById('tabById').classList.toggle('active', tab === 'byId');
+      document.getElementById('tabByDetails').classList.toggle('active', tab === 'byDetails');
+      document.getElementById('trackResult').style.display = 'none';
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.innerHTML = loading
+        ? '<i class="fas fa-spinner fa-spin"></i> Checking...'
+        : '<i class="fas fa-search"></i> Check Status';
+    }
+
+    async function searchById() {
+      const ref = document.getElementById('inputRef').value.trim();
+      if (!ref) { showError('Please enter your Reference ID.'); return; }
+      setLoading('btnById', true);
+      try {
+        const res = await fetch(`/api/status?ref=${encodeURIComponent(ref)}`);
+        const data = await res.json();
+        showResult(data);
+      } catch (e) {
+        showError('Network error. Please try again.');
+      }
+      setLoading('btnById', false);
+    }
+
+    async function searchByDetails() {
+      const phone   = document.getElementById('inputPhone').value.trim();
+      const name    = document.getElementById('inputName').value.trim();
+      const service = document.getElementById('inputService').value;
+      if (!phone || !name || !service) {
+        showError('All three fields (Phone, Name, and Service) are required.');
+        return;
+      }
+      setLoading('btnByDetails', true);
+      try {
+        const url = `/api/status?phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&service=${encodeURIComponent(service)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        showResult(data);
+      } catch (e) {
+        showError('Network error. Please try again.');
+      }
+      setLoading('btnByDetails', false);
+    }
+
+    function showResult(data) {
+      const box = document.getElementById('trackResult');
+      box.style.display = 'block';
+
+      if (!data.success) {
+        box.innerHTML = `
+          <div class="error-banner">
+            <i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>
+            <div>
+              <strong>Not Found</strong><br>
+              ${data.message || 'No enquiry found with the provided details. Please check the details and try again.'}
+            </div>
+          </div>`;
+        return;
+      }
+
+      const d = data.data;
+      const isAck = d.status === 'acknowledged';
+      const submitted = new Date(d.submittedAt).toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      const acknowledgedStr = d.acknowledgedAt
+        ? new Date(d.acknowledgedAt).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          })
+        : null;
+
+      const statusPill = isAck
+        ? `<span class="status-pill status-acknowledged"><i class="fas fa-check"></i> Acknowledged</span>`
+        : `<span class="status-pill status-new"><i class="fas fa-clock"></i> Pending Review</span>`;
+
+      const banner = isAck
+        ? `<div class="ack-banner"><i class="fas fa-check-circle" style="font-size:18px;flex-shrink:0;margin-top:2px"></i>
+            <div>Your enquiry has been <strong>seen and acknowledged</strong> by Navin ji. You should receive a call within 24 hours to discuss your project.</div>
+           </div>`
+        : `<div class="pending-banner"><i class="fas fa-hourglass-half" style="font-size:16px;flex-shrink:0;margin-top:2px"></i>
+            <div>Your enquiry is <strong>pending review</strong>. Navin ji will contact you within 24 hours of submission.</div>
+           </div>`;
+
+      box.innerHTML = `
+        <div class="result-card">
+          <div class="result-header">
+            <i class="fas fa-clipboard-list" style="color:var(--gold-lt);font-size:18px"></i>
+            <h4>${d.name}</h4>
+            ${statusPill}
+          </div>
+          <div class="result-body">
+            <div class="result-row">
+              <span class="rl">Service</span>
+              <span class="rv">${d.service}</span>
+            </div>
+            <div class="result-row">
+              <span class="rl">Submitted</span>
+              <span class="rv">${submitted}</span>
+            </div>
+            ${acknowledgedStr ? `
+            <div class="result-row">
+              <span class="rl">Acknowledged</span>
+              <span class="rv">${acknowledgedStr}</span>
+            </div>` : ''}
+            <div class="result-row">
+              <span class="rl">Reference ID</span>
+              <span class="rv ref-id-small">${d.id}</span>
+            </div>
+          </div>
+        </div>
+        ${banner}`;
+
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('trackResult');
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div class="error-banner">
+          <i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>
+          <div>${msg}</div>
+        </div>`;
+    }
+
+    // Allow pressing Enter in inputs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (document.getElementById('panelById').classList.contains('active')) {
+          searchById();
+        } else {
+          searchByDetails();
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

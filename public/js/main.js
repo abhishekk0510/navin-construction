@@ -65,6 +65,7 @@ const i18n = {
     'form.success.h3':'Received!',
     'form.success.p':'Navin ji will call you within <strong>24 hours</strong> for a free site visit.',
     'form.success.btn':'Submit Another Enquiry',
+    'form.success.p.dup':'Your enquiry is <strong>already registered</strong>. Navin ji will contact you within 24 hours.',
   },
   hi: {
     'nav.home':'होम','nav.about':'हमारे बारे में','nav.services':'सेवाएं',
@@ -101,6 +102,7 @@ const i18n = {
     'form.success.h3':'मिल गया!',
     'form.success.p':'नवीन जी <strong>24 घंटे</strong> में मुफ्त साइट विजिट के लिए कॉल करेंगे।',
     'form.success.btn':'और एक जानकारी भेजें',
+    'form.success.p.dup':'आपकी पूछताछ <strong>पहले से दर्ज है</strong>। नवीन जी 24 घंटे में आपसे संपर्क करेंगे।',
   }
 };
 
@@ -372,6 +374,20 @@ form.addEventListener('submit', async (e) => {
     if (result.success) {
       form.style.display = 'none';
       const success = document.getElementById('formSuccess');
+
+      // Show reference ID
+      if (result.enquiryId) {
+        document.getElementById('refIdText').textContent = result.enquiryId;
+        document.getElementById('refIdBlock').style.display = 'block';
+      }
+
+      // Different message for duplicate
+      if (result.isDuplicate) {
+        const msgEl = document.getElementById('successMsg');
+        msgEl.innerHTML = i18n[currentLang]['form.success.p.dup'] ||
+          'Your enquiry is <strong>already registered</strong>. Navin ji will contact you within 24 hours.';
+      }
+
       success.style.display = 'block';
       success.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
@@ -396,9 +412,42 @@ function resetForm() {
   form.reset();
   form.style.display = 'block';
   document.getElementById('formSuccess').style.display = 'none';
+  document.getElementById('refIdBlock').style.display = 'none';
+  document.getElementById('refIdText').textContent = '';
+  // Restore default success message
+  const msgEl = document.getElementById('successMsg');
+  msgEl.innerHTML = i18n[currentLang]['form.success.p'] || 'Navin ji will call you within <strong>24 hours</strong> for a free site visit.';
   resetSubmitBtn();
   document.getElementById('enquiryForm').scrollIntoView({ behavior: 'smooth' });
-};
+}
+
+// Copy reference ID button
+document.getElementById('copyRefBtn').addEventListener('click', () => {
+  const text = document.getElementById('refIdText').textContent;
+  const btn = document.getElementById('copyRefBtn');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.innerHTML = '<i class="fas fa-check"></i>';
+      setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+    }).catch(() => fallbackCopy(text, btn));
+  } else {
+    fallbackCopy(text, btn);
+  }
+});
+
+function fallbackCopy(text, btn) {
+  const el = document.getElementById('refIdText');
+  const range = document.createRange();
+  range.selectNode(el);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  try {
+    document.execCommand('copy');
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+  } catch (_) {}
+  window.getSelection().removeAllRanges();
+}
 
 // ===========================
 // SMOOTH ACTIVE NAV
