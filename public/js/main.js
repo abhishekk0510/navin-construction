@@ -288,7 +288,9 @@ function resetSubmitBtn() {
   submitBtn.disabled = false;
 }
 
-window.resetForm = function () {
+document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+
+function resetForm() {
   form.reset();
   form.style.display = 'block';
   document.getElementById('formSuccess').style.display = 'none';
