@@ -1171,3 +1171,44 @@ ul   { list-style:none; }
   text-decoration: none;
 }
 .track-link:hover { text-decoration: underline; }
+
+/* =============================
+   TRACK STATUS NAV LINK & NOTE
+============================= */
+.nav-track {
+  font-size: 13px !important;
+  color: var(--gold) !important;
+  font-weight: 700 !important;
+  border: 1.5px solid rgba(184,134,11,0.5);
+  border-radius: 20px;
+  padding: 5px 14px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition);
+}
+.nav-track:hover {
+  background: rgba(184,134,11,0.12) !important;
+  border-color: var(--gold) !important;
+}
+@media (max-width:992px) {
+  .nav-track {
+    display: inline-flex !important;
+    margin: 4px auto;
+    width: fit-content;
+  }
+}
+.form-track-note {
+  font-size: 13px;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.form-track-note i { color: var(--gold); }
+.form-track-note .track-link {
+  font-weight: 700;
+}

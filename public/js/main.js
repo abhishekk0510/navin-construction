@@ -66,6 +66,9 @@ const i18n = {
     'form.success.p':'Navin ji will call you within <strong>24 hours</strong> for a free site visit.',
     'form.success.btn':'Submit Another Enquiry',
     'form.success.p.dup':'Your enquiry is <strong>already registered</strong>. Navin ji will contact you within 24 hours.',
+    'form.track.note':'Already submitted?',
+    'form.track.link':'Track your enquiry status',
+    'nav.track':'Track Status',
   },
   hi: {
     'nav.home':'होम','nav.about':'हमारे बारे में','nav.services':'सेवाएं',
@@ -103,6 +106,9 @@ const i18n = {
     'form.success.p':'नवीन जी <strong>24 घंटे</strong> में मुफ्त साइट विजिट के लिए कॉल करेंगे।',
     'form.success.btn':'और एक जानकारी भेजें',
     'form.success.p.dup':'आपकी पूछताछ <strong>पहले से दर्ज है</strong>। नवीन जी 24 घंटे में आपसे संपर्क करेंगे।',
+    'form.track.note':'पहले से जानकारी भेज चुके हैं?',
+    'form.track.link':'अपनी जानकारी की स्थिति देखें',
+    'nav.track':'स्थिति देखें',
   }
 };
 
