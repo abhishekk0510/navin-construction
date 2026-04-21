@@ -372,11 +372,7 @@ form.addEventListener('submit', async (e) => {
     if (result.success) {
       form.style.display = 'none';
       const success = document.getElementById('formSuccess');
-      const refEl = document.getElementById('enquiryRef');
-      refEl.textContent = `Reference ID: ${result.enquiryId}`;
       success.style.display = 'block';
-
-      // Scroll to confirmation
       success.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
       alert(result.message || 'Something went wrong. Please try again.');
