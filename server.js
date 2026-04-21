@@ -2,11 +2,12 @@ if (process.env.NODE_ENV !== 'production') {
   try { require('dotenv').config(); } catch (_) {}
 }
 
-const express    = require('express');
-const cors       = require('cors');
-const helmet     = require('helmet');
-const rateLimit  = require('express-rate-limit');
+const express       = require('express');
+const cors          = require('cors');
+const helmet        = require('helmet');
+const rateLimit     = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
+const nodemailer    = require('nodemailer');
 const { v4: uuidv4 } = require('uuid');
 const fs         = require('fs');
 const path       = require('path');
@@ -119,6 +120,66 @@ async function getAllEnquiries() {
   return JSON.parse(fs.readFileSync(ENQUIRIES_FILE, 'utf8'));
 }
 
+// ─── Notifications ───────────────────────────────────────────────────────────
+async function sendEmailNotification(enquiry) {
+  if (!process.env.NOTIFY_EMAIL || !process.env.GMAIL_APP_PASSWORD) return;
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.NOTIFY_EMAIL,
+        pass: process.env.GMAIL_APP_PASSWORD
+      }
+    });
+    await transporter.sendMail({
+      from: `"Navin Construction Website" <${process.env.NOTIFY_EMAIL}>`,
+      to: process.env.NOTIFY_EMAIL,
+      subject: `New Enquiry from ${enquiry.name} – ${enquiry.service}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden">
+          <div style="background:#1a2b4a;padding:24px;text-align:center">
+            <h2 style="color:#c9a84c;margin:0">New Enquiry Received</h2>
+            <p style="color:#fff;margin:4px 0 0">Navin Developer &amp; Construction</p>
+          </div>
+          <div style="padding:24px">
+            <table style="width:100%;border-collapse:collapse">
+              <tr><td style="padding:8px;font-weight:bold;width:140px;color:#555">Name</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.name}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Phone</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.phone}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Email</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.email}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Service</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.service}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Budget</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.budget}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Location</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.projectType}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Message</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.message}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Time</td><td style="padding:8px">${new Date(enquiry.submittedAt).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}</td></tr>
+            </table>
+          </div>
+          <div style="background:#f5f5f5;padding:16px;text-align:center">
+            <p style="margin:0;color:#888;font-size:13px">Enquiry ID: ${enquiry.id}</p>
+          </div>
+        </div>
+      `
+    });
+    console.log(`Email notification sent to ${process.env.NOTIFY_EMAIL}`);
+  } catch (err) {
+    console.error('Email notification failed:', err.message);
+  }
+}
+
+async function sendSMSNotification(enquiry) {
+  if (!process.env.FAST2SMS_KEY || !process.env.CONTACT_PHONE2) return;
+  try {
+    const phone = process.env.CONTACT_PHONE2.replace(/^91/, '');
+    const msg = `New enquiry on your website! Name: ${enquiry.name}, Phone: ${enquiry.phone}, Service: ${enquiry.service}. -Navin Construction`;
+    const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${process.env.FAST2SMS_KEY}&message=${encodeURIComponent(msg)}&language=english&route=q&numbers=${phone}`;
+    const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
+    const data = await res.json();
+    console.log('SMS notification:', data.message?.[0] || JSON.stringify(data));
+  } catch (err) {
+    console.error('SMS notification failed:', err.message);
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ─── Input sanitization ───────────────────────────────────────────────────────
 function clean(str, maxLen = 500) {
   if (typeof str !== 'string') return '';
@@ -171,6 +232,10 @@ app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
 
   await saveEnquiry(enquiry);
   console.log(`New enquiry: ${name} (${email})`);
+
+  // Send notifications (non-blocking — won't affect response if they fail)
+  sendEmailNotification(enquiry).catch(() => {});
+  sendSMSNotification(enquiry).catch(() => {});
 
   res.json({
     success: true,
