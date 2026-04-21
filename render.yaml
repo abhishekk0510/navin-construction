@@ -10,3 +10,13 @@ services:
         value: production
       - key: MONGODB_URI
         sync: false
+      - key: CONTACT_PHONE1
+        sync: false
+      - key: CONTACT_PHONE1_DISPLAY
+        sync: false
+      - key: CONTACT_PHONE2
+        sync: false
+      - key: CONTACT_PHONE2_DISPLAY
+        sync: false
+      - key: CONTACT_INSTAGRAM
+        sync: false

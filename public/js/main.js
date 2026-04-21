@@ -1,4 +1,32 @@
 // ===========================
+// CONTACT INFO LOADER
+// ===========================
+(async function loadContactInfo() {
+  try {
+    const ci = await fetch('/api/contact').then(r => r.json());
+    const WA_MSG = encodeURIComponent("Navin ji, I'm interested in your construction services. Please call me.");
+
+    document.querySelectorAll('[data-ci-href]').forEach(el => {
+      const t = el.getAttribute('data-ci-href');
+      if (t === 'tel1')    el.href = `tel:+${ci.phone1}`;
+      if (t === 'tel2')    el.href = `tel:+${ci.phone2}`;
+      if (t === 'wa1')     el.href = `https://wa.me/${ci.phone1}`;
+      if (t === 'wa1-msg') el.href = `https://wa.me/${ci.phone1}?text=${WA_MSG}`;
+      if (t === 'ig')      el.href = `https://www.instagram.com/${ci.instagram}`;
+    });
+
+    document.querySelectorAll('[data-ci-text]').forEach(el => {
+      const t = el.getAttribute('data-ci-text');
+      if (t === 'phone1') el.textContent = ci.phone1Display;
+      if (t === 'phone2') el.textContent = ci.phone2Display;
+      if (t === 'ig')     el.textContent = `@${ci.instagram}`;
+    });
+  } catch (e) {
+    console.error('Contact info load failed', e);
+  }
+})();
+
+// ===========================
 // NAVBAR SCROLL EFFECT
 // ===========================
 const navbar = document.getElementById('navbar');

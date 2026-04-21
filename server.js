@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'production') {
+  try { require('dotenv').config(); } catch (_) {}
+}
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -90,6 +93,16 @@ app.post('/api/enquiry', async (req, res) => {
 app.get('/api/enquiries', async (req, res) => {
   const enquiries = await getAllEnquiries();
   res.json({ success: true, data: enquiries, total: enquiries.length });
+});
+
+app.get('/api/contact', (req, res) => {
+  res.json({
+    phone1: process.env.CONTACT_PHONE1 || '',
+    phone1Display: process.env.CONTACT_PHONE1_DISPLAY || '',
+    phone2: process.env.CONTACT_PHONE2 || '',
+    phone2Display: process.env.CONTACT_PHONE2_DISPLAY || '',
+    instagram: process.env.CONTACT_INSTAGRAM || '',
+  });
 });
 
 app.get('*', (req, res) => {
