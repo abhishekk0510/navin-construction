@@ -27,6 +27,88 @@
 })();
 
 // ===========================
+// MULTILINGUAL
+// ===========================
+const i18n = {
+  en: {
+    'nav.home':'Home','nav.about':'About','nav.services':'Services',
+    'nav.projects':'Projects','nav.videos':'Videos','nav.reviews':'Reviews',
+    'nav.quote':'Free Quote',
+    'hero.badge':'Trusted Construction Partner — Delhi NCR Since 2009',
+    'hero.tagline':'आपका हर सपना, हमारी मेहनत का परिणाम',
+    'hero.desc':'End-to-end construction solutions including planning, design, site preparation, building renovation and project management — serving Najafgarh and all of Delhi NCR.',
+    'hero.btn.quote':'Get Free Quote','hero.btn.projects':'View Projects',
+    'about.eyebrow':'About Us',
+    'services.eyebrow':'What We Do','services.h2':'Our <span class="hl">Construction Services</span>',
+    'whyus.eyebrow':'Why Choose Us',
+    'projects.eyebrow':'Our Portfolio','projects.h2':'Featured <span class="hl">Projects</span>',
+    'process.eyebrow':'How We Work','process.h2':'Our <span class="hl">Construction Process</span>',
+    'videos.eyebrow':'Watch & Learn','videos.h2':'Construction <span class="hl">Videos</span>',
+    'testimonials.eyebrow':'Client Reviews','testimonials.h2':'What Our <span class="hl">Clients Say</span>',
+    'enquiry.eyebrow':'Get In Touch','enquiry.h2':'Request a <span class="hl">Free Quote</span>',
+    'enquiry.desc':'Tell us about your project — we will visit your site and provide a detailed, written estimate within 24 hours. Absolutely free.',
+    'form.h3':'Send Your Requirements',
+    'form.name':'Full Name','form.phone':'Phone / WhatsApp','form.email':'Email Address',
+    'form.service':'Service Required','form.budget':'Estimated Budget',
+    'form.location':'Project Location / Area','form.message':'Project Details',
+    'form.submit':'Submit Enquiry',
+    'form.note':'Your information is 100% safe. We never share your data.',
+    'form.success.h3':'Received!',
+    'form.success.p':'Navin ji will call you within <strong>24 hours</strong> for a free site visit.',
+    'form.success.btn':'Submit Another Enquiry',
+  },
+  hi: {
+    'nav.home':'होम','nav.about':'हमारे बारे में','nav.services':'सेवाएं',
+    'nav.projects':'प्रोजेक्ट्स','nav.videos':'वीडियो','nav.reviews':'समीक्षाएं',
+    'nav.quote':'मुफ्त कोटेशन',
+    'hero.badge':'दिल्ली NCR का विश्वसनीय निर्माण साझेदार — 2009 से',
+    'hero.tagline':'आपका हर सपना, हमारी मेहनत का परिणाम',
+    'hero.desc':'योजना, डिज़ाइन, साइट तैयारी, भवन नवीनीकरण और परियोजना प्रबंधन सहित संपूर्ण निर्माण समाधान — नजफगढ़ और पूरे दिल्ली NCR में।',
+    'hero.btn.quote':'मुफ्त कोटेशन पाएं','hero.btn.projects':'प्रोजेक्ट देखें',
+    'about.eyebrow':'हमारे बारे में',
+    'services.eyebrow':'हम क्या करते हैं','services.h2':'हमारी <span class="hl">निर्माण सेवाएं</span>',
+    'whyus.eyebrow':'हमें क्यों चुनें',
+    'projects.eyebrow':'हमारा पोर्टफोलियो','projects.h2':'हमारे <span class="hl">प्रमुख प्रोजेक्ट्स</span>',
+    'process.eyebrow':'हम कैसे काम करते हैं','process.h2':'हमारी <span class="hl">निर्माण प्रक्रिया</span>',
+    'videos.eyebrow':'देखें और जानें','videos.h2':'निर्माण <span class="hl">वीडियो</span>',
+    'testimonials.eyebrow':'ग्राहक समीक्षाएं','testimonials.h2':'हमारे <span class="hl">ग्राहक क्या कहते हैं</span>',
+    'enquiry.eyebrow':'संपर्क करें','enquiry.h2':'<span class="hl">मुफ्त कोटेशन</span> के लिए पूछें',
+    'enquiry.desc':'अपने प्रोजेक्ट के बारे में बताएं — हम 24 घंटे में साइट विजिट करके लिखित अनुमान देंगे। बिल्कुल मुफ्त।',
+    'form.h3':'अपनी जरूरत बताएं',
+    'form.name':'पूरा नाम','form.phone':'फोन / व्हाट्सऐप','form.email':'ईमेल पता',
+    'form.service':'सेवा चुनें','form.budget':'अनुमानित बजट',
+    'form.location':'प्रोजेक्ट का स्थान','form.message':'प्रोजेक्ट का विवरण',
+    'form.submit':'जानकारी भेजें',
+    'form.note':'आपकी जानकारी 100% सुरक्षित है। हम कभी शेयर नहीं करते।',
+    'form.success.h3':'मिल गया!',
+    'form.success.p':'नवीन जी <strong>24 घंटे</strong> में मुफ्त साइट विजिट के लिए कॉल करेंगे।',
+    'form.success.btn':'और एक जानकारी भेजें',
+  }
+};
+
+let currentLang = 'en';
+
+function setLanguage(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key] !== undefined) el.textContent = i18n[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (i18n[lang][key] !== undefined) el.innerHTML = i18n[lang][key];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+  document.documentElement.lang = lang === 'hi' ? 'hi' : 'en';
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
+});
+
+// ===========================
 // NAVBAR SCROLL EFFECT
 // ===========================
 const navbar = document.getElementById('navbar');

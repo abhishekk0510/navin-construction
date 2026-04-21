@@ -1011,10 +1011,27 @@ ul   { list-style:none; }
   .nav-links {
     display:none; position:fixed; top:0; left:0; right:0; bottom:0;
     background:rgba(13,31,60,0.98); flex-direction:column;
-    justify-content:center; align-items:center; gap:28px; z-index:999;
+    justify-content:center; align-items:center; gap:8px; z-index:999;
   }
   .nav-links.open { display:flex; }
-  .nav-links a { font-size:16px; }
+  .nav-links.open a {
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 18px;
+    padding: 14px 40px;
+    width: 100%;
+    text-align: center;
+    border-radius: 6px;
+    background: transparent !important;
+  }
+  .nav-links.open a:hover {
+    color: var(--gold-lt) !important;
+    background: rgba(255,255,255,0.07) !important;
+  }
+  .nav-links.open .nav-cta {
+    background: var(--gold) !important;
+    color: var(--white) !important;
+    margin-top: 8px;
+  }
   .hamburger { display:flex; z-index:1000; }
   .hero-content h1 { font-size:38px; }
   .hero-stats { flex-direction:column; width:fit-content; }
@@ -1039,4 +1056,57 @@ ul   { list-style:none; }
   .feature-grid { grid-template-columns:1fr; }
   .cred-grid { grid-template-columns:1fr; }
   .gst-proof { flex-direction:column; }
+}
+
+/* =============================
+   INITIAL AVATAR (replaces stock photos)
+============================= */
+.client-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lato', sans-serif;
+  font-size: 19px; font-weight: 700;
+  color: #fff;
+  border: 2px solid var(--gold);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+/* =============================
+   LANGUAGE SWITCHER
+============================= */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 10px;
+  border: 1px solid rgba(184,134,11,0.5);
+  border-radius: var(--r);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-mid);
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 11px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.lang-btn.active {
+  background: var(--gold);
+  color: var(--white);
+}
+.lang-btn:hover:not(.active) {
+  background: var(--cream);
+  color: var(--navy);
+}
+@media (max-width:768px) {
+  .lang-switcher { margin-left:0; margin-right:8px; }
 }

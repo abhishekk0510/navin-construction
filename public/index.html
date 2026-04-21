@@ -41,14 +41,18 @@
         </div>
       </div>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#videos">Videos</a></li>
-        <li><a href="#testimonials">Reviews</a></li>
-        <li><a href="#enquiry" class="nav-cta">Free Quote</a></li>
+        <li><a href="#home" data-i18n="nav.home">Home</a></li>
+        <li><a href="#about" data-i18n="nav.about">About</a></li>
+        <li><a href="#services" data-i18n="nav.services">Services</a></li>
+        <li><a href="#projects" data-i18n="nav.projects">Projects</a></li>
+        <li><a href="#videos" data-i18n="nav.videos">Videos</a></li>
+        <li><a href="#testimonials" data-i18n="nav.reviews">Reviews</a></li>
+        <li><a href="#enquiry" class="nav-cta" data-i18n="nav.quote">Free Quote</a></li>
       </ul>
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="hi">हिं</button>
+      </div>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -60,13 +64,13 @@
     <div class="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-est"><i class="fas fa-medal"></i> Trusted Construction Partner — Delhi NCR Since 2009</div>
+      <div class="hero-est"><i class="fas fa-medal"></i> <span data-i18n="hero.badge">Trusted Construction Partner — Delhi NCR Since 2009</span></div>
       <h1>Navin Developer<br>&amp; Construction</h1>
-      <p class="hero-tagline">आपका हर सपना, हमारी मेहनत का परिणाम</p>
-      <p>End-to-end construction solutions including planning, design, site preparation, building renovation and project management — serving Najafgarh and all of Delhi NCR.</p>
+      <p class="hero-tagline" data-i18n="hero.tagline">आपका हर सपना, हमारी मेहनत का परिणाम</p>
+      <p data-i18n="hero.desc">End-to-end construction solutions including planning, design, site preparation, building renovation and project management — serving Najafgarh and all of Delhi NCR.</p>
       <div class="hero-buttons">
-        <a href="#enquiry" class="btn btn-gold"><i class="fas fa-paper-plane"></i> Get Free Quote</a>
-        <a href="#projects" class="btn btn-outline-white"><i class="fas fa-images"></i> View Projects</a>
+        <a href="#enquiry" class="btn btn-gold"><i class="fas fa-paper-plane"></i> <span data-i18n="hero.btn.quote">Get Free Quote</span></a>
+        <a href="#projects" class="btn btn-outline-white"><i class="fas fa-images"></i> <span data-i18n="hero.btn.projects">View Projects</span></a>
       </div>
       <div class="hero-stats">
         <div class="h-stat"><div class="num"><span class="stat-num" data-count="180">0</span><sup>+</sup></div><div class="lbl">Projects Completed</div></div>
@@ -125,7 +129,7 @@
           </div>
         </div>
         <div class="about-text">
-          <span class="eyebrow">About Us</span>
+          <span class="eyebrow" data-i18n="about.eyebrow">About Us</span>
           <h2>Navin Developer <span class="hl">&amp; Construction</span></h2>
           <div class="gold-rule"><span></span><i class="fas fa-hard-hat"></i><span></span></div>
           <p class="lead" style="margin-top:18px;">Established in 2009, Navin Developer &amp; Construction has been the trusted name for quality construction and renovation across Najafgarh and Delhi NCR.</p>
@@ -217,8 +221,8 @@
   <section class="services section-pad bg-cream" id="services">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">What We Do</span>
-        <h2>Our <span class="hl">Construction Services</span></h2>
+        <span class="eyebrow" data-i18n="services.eyebrow">What We Do</span>
+        <h2 data-i18n-html="services.h2">Our <span class="hl">Construction Services</span></h2>
         <div class="gold-rule"><span></span><i class="fas fa-tools"></i><span></span></div>
         <p style="margin-top:14px;">From planning to project handover — complete solutions so you don't have to worry about anything.</p>
       </div>
@@ -316,7 +320,7 @@
     <div class="container">
       <div class="why-grid">
         <div class="why-text">
-          <span class="eyebrow">Why Choose Us</span>
+          <span class="eyebrow" data-i18n="whyus.eyebrow">Why Choose Us</span>
           <h2>The <span class="hl">Navin Developer</span> Difference</h2>
           <div class="gold-rule" style="justify-content:flex-start;margin-bottom:16px;"><span></span><i class="fas fa-star"></i><span></span></div>
           <p>We don't just build structures — we build trust, lasting value, and relationships for every single client.</p>
@@ -369,8 +373,8 @@
   <section class="projects section-pad bg-navy" id="projects">
     <div class="container">
       <div class="section-header light">
-        <span class="eyebrow" style="color:var(--gold-lt)">Our Portfolio</span>
-        <h2>Featured <span class="hl">Projects</span></h2>
+        <span class="eyebrow" style="color:var(--gold-lt)" data-i18n="projects.eyebrow">Our Portfolio</span>
+        <h2 data-i18n-html="projects.h2">Featured <span class="hl">Projects</span></h2>
         <div class="gold-rule" style="margin-top:10px;"><span style="background:rgba(255,255,255,0.2)"></span><i class="fas fa-building" style="color:var(--gold)"></i><span style="background:rgba(255,255,255,0.2)"></span></div>
         <p style="margin-top:14px;">A selection of our work across Najafgarh and Delhi NCR — residential, commercial, and renovation.</p>
       </div>
@@ -456,8 +460,8 @@
   <section class="process section-pad bg-cream" id="process">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">How We Work</span>
-        <h2>Our <span class="hl">Construction Process</span></h2>
+        <span class="eyebrow" data-i18n="process.eyebrow">How We Work</span>
+        <h2 data-i18n-html="process.h2">Our <span class="hl">Construction Process</span></h2>
         <div class="gold-rule"><span></span><i class="fas fa-cogs"></i><span></span></div>
         <p style="margin-top:14px;">A clear, transparent process — no confusion, no surprises. Just results.</p>
       </div>
@@ -504,8 +508,8 @@
   <section class="videos section-pad bg-white" id="videos">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">Watch &amp; Learn</span>
-        <h2>Construction <span class="hl">Videos</span></h2>
+        <span class="eyebrow" data-i18n="videos.eyebrow">Watch &amp; Learn</span>
+        <h2 data-i18n-html="videos.h2">Construction <span class="hl">Videos</span></h2>
         <div class="gold-rule"><span></span><i class="fas fa-play"></i><span></span></div>
         <p style="margin-top:14px;">Watch construction timelapses, renovation transformations, and expert construction insights.</p>
       </div>
@@ -558,8 +562,8 @@
   <section class="testimonials section-pad bg-cream" id="testimonials">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">Client Reviews</span>
-        <h2>What Our <span class="hl">Clients Say</span></h2>
+        <span class="eyebrow" data-i18n="testimonials.eyebrow">Client Reviews</span>
+        <h2 data-i18n-html="testimonials.h2">What Our <span class="hl">Clients Say</span></h2>
         <div class="gold-rule"><span></span><i class="fas fa-quote-right"></i><span></span></div>
         <p style="margin-top:14px;">Real words from real clients across Najafgarh and Delhi NCR.</p>
       </div>
@@ -567,42 +571,66 @@
         <div class="testimonial-track" id="testimonialTrack">
           <div class="testimonial-card">
             <div class="stars">★★★★★</div>
-            <p>"Navin ji ne hamare ghar ka kaam bahut hi acche se kiya. Time par kaam khatam kiya, quality mein koi kami nahi. Sab neighbours bhi pooch rahe hain. Bahut satisfied hoon!"</p>
+            <p>"Bhai ek dum first class kaam! Navin ji ne hamare do manzil ka makaan bilkul time pe complete kiya. Quality mein koi kami nahi thi, sab kuch pehle se bataya. Main toh sab rishtedaaron ko refer kar raha hoon!"</p>
             <div class="client">
-              <img src="https://i.pravatar.cc/60?img=1" alt="Ramesh Kumar" />
-              <div><h4>Ramesh Kumar</h4><span>Homeowner, Najafgarh — G+2 House Built 2023</span></div>
+              <div class="client-avatar" style="background:#1a2b4a;">R</div>
+              <div><h4>Ramesh Kumar</h4><span>Homeowner, Najafgarh — G+2 House 2023</span></div>
             </div>
           </div>
           <div class="testimonial-card">
             <div class="stars">★★★★★</div>
-            <p>"We gave them complete renovation of our 20-year-old house. The quality was excellent, pricing was 100% transparent, and the team cleaned up after every day's work. Highly recommend!"</p>
+            <p>"We gave our 20-year-old house for complete renovation. Quality was excellent, pricing 100% transparent — jo bola wo kiya. Team ne kaam ke baad saaf safai bhi ki. Bahut accha experience raha!"</p>
             <div class="client">
-              <img src="https://i.pravatar.cc/60?img=5" alt="Suresh Sharma" />
+              <div class="client-avatar" style="background:#5c3317;">S</div>
               <div><h4>Suresh &amp; Anita Sharma</h4><span>Homeowners, Dwarka Sector 12 — Renovation 2024</span></div>
             </div>
           </div>
           <div class="testimonial-card">
             <div class="stars">★★★★★</div>
-            <p>"Our shop renovation was done in exactly 12 days as promised. Clean work, proper finishing, and the GST bill was provided without asking. Very honest people. Will call again!"</p>
+            <p>"Shop renovation exactly 12 din mein kiya jaise promise kiya tha. Clean kaam, proper finishing. GST bill bhi bina maange mil gaya. Bahut honest log hain, dobara inhi se kaam karwaunga!"</p>
             <div class="client">
-              <img src="https://i.pravatar.cc/60?img=12" alt="Mohit Garg" />
-              <div><h4>Mohit Garg</h4><span>Shop Owner, Najafgarh Market — Shop Renovation 2024</span></div>
+              <div class="client-avatar" style="background:#1b5e20;">M</div>
+              <div><h4>Mohit Garg</h4><span>Shop Owner, Najafgarh Market — Renovation 2024</span></div>
             </div>
           </div>
           <div class="testimonial-card">
             <div class="stars">★★★★★</div>
-            <p>"Navin Developer built our 3-floor house from scratch. From foundation to final painting, every stage was perfect. They handled all the material sourcing too. Zero compromise on quality."</p>
+            <p>"Teen manzil ka makaan foundation se painting tak sab Navin ji ki team ne kiya. Har stage ka hisaab diya, koi chupi cost nahi aayi. Ab padosi bhi inhi ka number maang rahe hain!"</p>
             <div class="client">
-              <img src="https://i.pravatar.cc/60?img=8" alt="Deepak Verma" />
+              <div class="client-avatar" style="background:#4a1010;">D</div>
               <div><h4>Deepak Verma</h4><span>Homeowner, Uttam Nagar — G+3 House 2023</span></div>
             </div>
           </div>
           <div class="testimonial-card">
             <div class="stars">★★★★★</div>
-            <p>"Best contractor in Najafgarh area without doubt. Honest rates, no hidden charges, quality material, and skilled workers. My kothi looks beautiful. Shukriya Navin ji!"</p>
+            <p>"Navin bhai ki team ne kothi ka kaam itna sundar kiya ki poora mohalla poochh raha tha contractor kaun tha! Bilkul sahi kaam, sahi daam. Dil se shukriya aapka!"</p>
             <div class="client">
-              <img src="https://i.pravatar.cc/60?img=20" alt="Kavita Singh" />
+              <div class="client-avatar" style="background:#4a235a;">K</div>
               <div><h4>Kavita Singh</h4><span>Homeowner, Jharoda Road — Kothi Renovation 2024</span></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Pehle bahut darr tha contractor ko kaam dene mein — unhone written agreement diya, BOQ diya, aur sab kuch time pe kiya. Ab dusra floor bhi inhi se banwaunga. 100% recommended!"</p>
+            <div class="client">
+              <div class="client-avatar" style="background:#004d40;">A</div>
+              <div><h4>Arun Yadav</h4><span>Homeowner, Palam — G+1 House 2024</span></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Office renovation ka kaam 3 hafte mein ho gaya. Workers bhi bahut disciplined the, roz kaam ke baad jagah saaf ki. Very professional team. Jo bola, uspe poora amal kiya!"</p>
+            <div class="client">
+              <div class="client-avatar" style="background:#37474f;">P</div>
+              <div><h4>Pankaj Mittal</h4><span>Office Owner, Janakpuri — Office Fit-Out 2024</span></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Budget tight tha toh dar lag raha tha, par Navin ji ne budget ke andar hi sab kuch dum dar kar diya. Koi dabav nahi, koi jaldi nahi — dil se kaam karte hain ye log. Bahut khush hoon!"</p>
+            <div class="client">
+              <div class="client-avatar" style="background:#880e4f;">S</div>
+              <div><h4>Sunita Devi</h4><span>Homeowner, Vikaspuri — Full Renovation 2024</span></div>
             </div>
           </div>
         </div>
@@ -620,8 +648,8 @@
     <div class="container">
       <div class="enquiry-grid">
         <div class="enquiry-info">
-          <span class="eyebrow" style="color:var(--gold-lt)">Get In Touch</span>
-          <h2>Request a <span class="hl">Free Quote</span></h2>
+          <span class="eyebrow" style="color:var(--gold-lt)" data-i18n="enquiry.eyebrow">Get In Touch</span>
+          <h2 data-i18n-html="enquiry.h2">Request a <span class="hl">Free Quote</span></h2>
           <div class="gold-rule" style="justify-content:flex-start;margin-bottom:16px;"><span style="background:rgba(255,255,255,0.2)"></span><i class="fas fa-envelope" style="color:var(--gold)"></i><span style="background:rgba(255,255,255,0.2)"></span></div>
           <p>Tell us about your project — we will visit your site and provide a detailed, written estimate within 24 hours. Absolutely free.</p>
           <div class="contact-details">
