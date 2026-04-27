@@ -3,3 +3,5 @@ data/enquiries.json
 .env
 .DS_Store
 .env.local
+.claude/settings.local.json
+.idea/
