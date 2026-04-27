@@ -245,9 +245,19 @@ ul   { list-style:none; }
 .nav-cta {
   background: var(--gold) !important;
   color: var(--white) !important;
-  padding: 10px 18px !important;
+  padding: 9px 22px !important;
+  border-radius: 22px !important;
+  border: 2px solid var(--gold) !important;
+  box-shadow: 0 3px 14px rgba(184,134,11,0.35) !important;
+  font-weight: 900 !important;
+  letter-spacing: 1.2px !important;
 }
-.nav-cta:hover { background: var(--gold-lt) !important; }
+.nav-cta:hover {
+  background: var(--gold-lt) !important;
+  border-color: var(--gold-lt) !important;
+  box-shadow: 0 5px 20px rgba(184,134,11,0.55) !important;
+  transform: translateY(-1px) !important;
+}
 
 .hamburger {
   display: none;
@@ -1032,6 +1042,9 @@ ul   { list-style:none; }
     background: var(--gold) !important;
     color: var(--white) !important;
     margin-top: 8px;
+    border-radius: 22px !important;
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 3px 14px rgba(184,134,11,0.4) !important;
   }
   .hamburger { display:flex; z-index:1000; }
   .hero-content h1 { font-size:38px; }

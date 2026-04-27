@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Track Your Enquiry | Navin Developer & Construction</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
@@ -281,10 +282,10 @@
 
         <!-- Tabs -->
         <div class="track-tabs">
-          <button class="track-tab active" id="tabById" onclick="switchTab('byId')">
+          <button type="button" class="track-tab active" id="tabById">
             <i class="fas fa-hashtag"></i> By Reference ID
           </button>
-          <button class="track-tab" id="tabByDetails" onclick="switchTab('byDetails')">
+          <button type="button" class="track-tab" id="tabByDetails">
             <i class="fas fa-search"></i> By Your Details
           </button>
         </div>
@@ -296,7 +297,7 @@
               <label for="inputRef"><i class="fas fa-hashtag"></i> Reference ID</label>
               <input type="text" id="inputRef" placeholder="Paste your Reference ID here" autocomplete="off" />
             </div>
-            <button class="track-btn" id="btnById" onclick="searchById()">
+            <button type="button" class="track-btn" id="btnById">
               <i class="fas fa-search"></i> Check Status
             </button>
           </div>
@@ -327,7 +328,7 @@
                 <option value="General">General</option>
               </select>
             </div>
-            <button class="track-btn" id="btnByDetails" onclick="searchByDetails()">
+            <button type="button" class="track-btn" id="btnByDetails">
               <i class="fas fa-search"></i> Check Status
             </button>
           </div>
@@ -344,147 +345,164 @@
   </div>
 
   <script>
+    // ── Tab switching ──────────────────────────────────────────────────────────
+    var activeTab = 'byId';
+
     function switchTab(tab) {
-      document.getElementById('panelById').classList.toggle('active', tab === 'byId');
-      document.getElementById('panelByDetails').classList.toggle('active', tab === 'byDetails');
-      document.getElementById('tabById').classList.toggle('active', tab === 'byId');
-      document.getElementById('tabByDetails').classList.toggle('active', tab === 'byDetails');
-      document.getElementById('trackResult').style.display = 'none';
+      activeTab = tab;
+      var panelById      = document.getElementById('panelById');
+      var panelByDetails = document.getElementById('panelByDetails');
+      var tabById        = document.getElementById('tabById');
+      var tabByDetails   = document.getElementById('tabByDetails');
+      var result         = document.getElementById('trackResult');
+
+      if (tab === 'byId') {
+        panelById.style.display      = 'block';
+        panelByDetails.style.display = 'none';
+        tabById.classList.add('active');
+        tabByDetails.classList.remove('active');
+      } else {
+        panelById.style.display      = 'none';
+        panelByDetails.style.display = 'block';
+        tabByDetails.classList.add('active');
+        tabById.classList.remove('active');
+      }
+
+      result.style.display = 'none';
     }
 
+    document.getElementById('tabById').addEventListener('click', function() { switchTab('byId'); });
+    document.getElementById('tabByDetails').addEventListener('click', function() { switchTab('byDetails'); });
+
+    // ── Loading state ──────────────────────────────────────────────────────────
     function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
+      var btn = document.getElementById(btnId);
+      if (!btn) return;
       btn.disabled = loading;
       btn.innerHTML = loading
         ? '<i class="fas fa-spinner fa-spin"></i> Checking...'
         : '<i class="fas fa-search"></i> Check Status';
     }
 
-    async function searchById() {
-      const ref = document.getElementById('inputRef').value.trim();
+    // ── Search by Reference ID ─────────────────────────────────────────────────
+    function searchById() {
+      var ref = document.getElementById('inputRef').value.trim();
       if (!ref) { showError('Please enter your Reference ID.'); return; }
+
       setLoading('btnById', true);
-      try {
-        const res = await fetch(`/api/status?ref=${encodeURIComponent(ref)}`);
-        const data = await res.json();
-        showResult(data);
-      } catch (e) {
-        showError('Network error. Please try again.');
-      }
-      setLoading('btnById', false);
+      fetch('/api/status?ref=' + encodeURIComponent(ref))
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          showResult(data);
+          setLoading('btnById', false);
+        })
+        .catch(function() {
+          showError('Network error. Please try again.');
+          setLoading('btnById', false);
+        });
     }
 
-    async function searchByDetails() {
-      const phone   = document.getElementById('inputPhone').value.trim();
-      const name    = document.getElementById('inputName').value.trim();
-      const service = document.getElementById('inputService').value;
+    document.getElementById('btnById').addEventListener('click', searchById);
+    document.getElementById('inputRef').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); searchById(); }
+    });
+
+    // ── Search by Details ──────────────────────────────────────────────────────
+    function searchByDetails() {
+      var phone   = document.getElementById('inputPhone').value.trim();
+      var name    = document.getElementById('inputName').value.trim();
+      var service = document.getElementById('inputService').value;
       if (!phone || !name || !service) {
         showError('All three fields (Phone, Name, and Service) are required.');
         return;
       }
+
       setLoading('btnByDetails', true);
-      try {
-        const url = `/api/status?phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&service=${encodeURIComponent(service)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        showResult(data);
-      } catch (e) {
-        showError('Network error. Please try again.');
-      }
-      setLoading('btnByDetails', false);
+      var url = '/api/status?phone=' + encodeURIComponent(phone) +
+                '&name=' + encodeURIComponent(name) +
+                '&service=' + encodeURIComponent(service);
+      fetch(url)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          showResult(data);
+          setLoading('btnByDetails', false);
+        })
+        .catch(function() {
+          showError('Network error. Please try again.');
+          setLoading('btnByDetails', false);
+        });
     }
 
+    document.getElementById('btnByDetails').addEventListener('click', searchByDetails);
+    ['inputPhone', 'inputName'].forEach(function(id) {
+      document.getElementById(id).addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); searchByDetails(); }
+      });
+    });
+
+    // ── Show result ────────────────────────────────────────────────────────────
     function showResult(data) {
-      const box = document.getElementById('trackResult');
+      var box = document.getElementById('trackResult');
       box.style.display = 'block';
 
       if (!data.success) {
-        box.innerHTML = `
-          <div class="error-banner">
-            <i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>
-            <div>
-              <strong>Not Found</strong><br>
-              ${data.message || 'No enquiry found with the provided details. Please check the details and try again.'}
-            </div>
-          </div>`;
+        box.innerHTML =
+          '<div class="error-banner">' +
+            '<i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>' +
+            '<div><strong>Not Found</strong><br>' +
+            (data.message || 'No enquiry found. Please check the details and try again.') +
+            '</div></div>';
         return;
       }
 
-      const d = data.data;
-      const isAck = d.status === 'acknowledged';
-      const submitted = new Date(d.submittedAt).toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
-      const acknowledgedStr = d.acknowledgedAt
-        ? new Date(d.acknowledgedAt).toLocaleString('en-IN', {
-            timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-          })
-        : null;
+      var d   = data.data;
+      var isAck = d.status === 'acknowledged';
+      var opts = { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      var submitted      = new Date(d.submittedAt).toLocaleString('en-IN', opts);
+      var acknowledgedStr = d.acknowledgedAt ? new Date(d.acknowledgedAt).toLocaleString('en-IN', opts) : null;
 
-      const statusPill = isAck
-        ? `<span class="status-pill status-acknowledged"><i class="fas fa-check"></i> Acknowledged</span>`
-        : `<span class="status-pill status-new"><i class="fas fa-clock"></i> Pending Review</span>`;
+      var statusPill = isAck
+        ? '<span class="status-pill status-acknowledged"><i class="fas fa-check"></i> Acknowledged</span>'
+        : '<span class="status-pill status-new"><i class="fas fa-clock"></i> Pending Review</span>';
 
-      const banner = isAck
-        ? `<div class="ack-banner"><i class="fas fa-check-circle" style="font-size:18px;flex-shrink:0;margin-top:2px"></i>
-            <div>Your enquiry has been <strong>seen and acknowledged</strong> by Navin ji. You should receive a call within 24 hours to discuss your project.</div>
-           </div>`
-        : `<div class="pending-banner"><i class="fas fa-hourglass-half" style="font-size:16px;flex-shrink:0;margin-top:2px"></i>
-            <div>Your enquiry is <strong>pending review</strong>. Navin ji will contact you within 24 hours of submission.</div>
-           </div>`;
+      var banner = isAck
+        ? '<div class="ack-banner"><i class="fas fa-check-circle" style="font-size:18px;flex-shrink:0;margin-top:2px"></i>' +
+          '<div>Your enquiry has been <strong>seen and acknowledged</strong> by Navin ji. You should receive a call within 24 hours.</div></div>'
+        : '<div class="pending-banner"><i class="fas fa-hourglass-half" style="font-size:16px;flex-shrink:0;margin-top:2px"></i>' +
+          '<div>Your enquiry is <strong>pending review</strong>. Navin ji will contact you within 24 hours of submission.</div></div>';
 
-      box.innerHTML = `
-        <div class="result-card">
-          <div class="result-header">
-            <i class="fas fa-clipboard-list" style="color:var(--gold-lt);font-size:18px"></i>
-            <h4>${d.name}</h4>
-            ${statusPill}
-          </div>
-          <div class="result-body">
-            <div class="result-row">
-              <span class="rl">Service</span>
-              <span class="rv">${d.service}</span>
-            </div>
-            <div class="result-row">
-              <span class="rl">Submitted</span>
-              <span class="rv">${submitted}</span>
-            </div>
-            ${acknowledgedStr ? `
-            <div class="result-row">
-              <span class="rl">Acknowledged</span>
-              <span class="rv">${acknowledgedStr}</span>
-            </div>` : ''}
-            <div class="result-row">
-              <span class="rl">Reference ID</span>
-              <span class="rv ref-id-small">${d.id}</span>
-            </div>
-          </div>
-        </div>
-        ${banner}`;
+      var ackRow = acknowledgedStr
+        ? '<div class="result-row"><span class="rl">Acknowledged</span><span class="rv">' + acknowledgedStr + '</span></div>'
+        : '';
+
+      box.innerHTML =
+        '<div class="result-card">' +
+          '<div class="result-header">' +
+            '<i class="fas fa-clipboard-list" style="color:var(--gold-lt);font-size:18px"></i>' +
+            '<h4>' + d.name + '</h4>' +
+            statusPill +
+          '</div>' +
+          '<div class="result-body">' +
+            '<div class="result-row"><span class="rl">Service</span><span class="rv">' + d.service + '</span></div>' +
+            '<div class="result-row"><span class="rl">Submitted</span><span class="rv">' + submitted + '</span></div>' +
+            ackRow +
+            '<div class="result-row"><span class="rl">Reference ID</span><span class="rv ref-id-small">' + d.id + '</span></div>' +
+          '</div>' +
+        '</div>' + banner;
 
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    // ── Show error ─────────────────────────────────────────────────────────────
     function showError(msg) {
-      const box = document.getElementById('trackResult');
+      var box = document.getElementById('trackResult');
       box.style.display = 'block';
-      box.innerHTML = `
-        <div class="error-banner">
-          <i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>
-          <div>${msg}</div>
-        </div>`;
+      box.innerHTML =
+        '<div class="error-banner">' +
+          '<i class="fas fa-exclamation-circle" style="font-size:20px;flex-shrink:0"></i>' +
+          '<div>' + msg + '</div>' +
+        '</div>';
     }
-
-    // Allow pressing Enter in inputs
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        if (document.getElementById('panelById').classList.contains('active')) {
-          searchById();
-        } else {
-          searchByDetails();
-        }
-      }
-    });
   </script>
 
 </body>
