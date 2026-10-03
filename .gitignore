@@ -5,3 +5,5 @@ data/enquiries.json
 .env.local
 .claude/settings.local.json
 .idea/
+.vercel
+.env*

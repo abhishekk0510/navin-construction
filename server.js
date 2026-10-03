@@ -14,9 +14,19 @@ const fs             = require('fs');
 const path           = require('path');
 
 const app  = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI        = process.env.MONGODB_URI;
-const ACKNOWLEDGE_SECRET = process.env.ACKNOWLEDGE_SECRET || 'de6076b2688b4314cee42679e8b46c5a6abd11fdbf3dbe52fef409063e10f246';
+const SITE_URL           = (process.env.SITE_URL || '').replace(/\/+$/, '');
+const ACKNOWLEDGE_SECRET = process.env.ACKNOWLEDGE_SECRET ||
+  (process.env.NODE_ENV === 'production' ? null : crypto.randomBytes(32).toString('hex'));
+
+if (!ACKNOWLEDGE_SECRET) {
+  throw new Error('ACKNOWLEDGE_SECRET must be set in production.');
+}
+
+// Express 4 does not catch rejected promises from async handlers
+const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 // ─── Security Headers ─────────────────────────────────────────────────────────
 app.use(helmet({
@@ -48,7 +58,9 @@ const allowedOrigins = [/\.vercel\.app$/, /localhost/];
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.some(p => p.test(origin))) return cb(null, true);
-    cb(new Error('Not allowed by CORS'));
+    const err = new Error('Not allowed by CORS');
+    err.status = 403;
+    cb(err);
   }
 }));
 
@@ -56,6 +68,9 @@ app.use(cors({
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(mongoSanitize());
+
+// ─── Static files ─────────────────────────────────────────────────────────────
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── Rate limiters ────────────────────────────────────────────────────────────
 app.use(rateLimit({
@@ -75,9 +90,6 @@ const statusLimiter = rateLimit({
   standardHeaders: true, legacyHeaders: false,
   message: { success: false, message: 'Too many status checks. Please try again later.' }
 });
-
-// ─── Static files ─────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── MongoDB connection (cached for serverless) ───────────────────────────────
 let db = null;
@@ -153,10 +165,14 @@ async function findById(id) {
   return list.find(e => e.id === id) || null;
 }
 
+// Compare the last 10 digits so 919876543210, 09876543210 and 9876543210 all match
+function phoneKey(digits) {
+  return digits.slice(-10);
+}
+
 function phoneMatch(storedDigits, searchDigits) {
-  if (storedDigits === searchDigits) return true;
-  // Handle country code variations: 919876543210 ↔ 9876543210
-  return storedDigits.endsWith(searchDigits) || searchDigits.endsWith(storedDigits);
+  if (storedDigits.length < 7 || searchDigits.length < 7) return false;
+  return phoneKey(storedDigits) === phoneKey(searchDigits);
 }
 
 function matchNorm(e, normPhone, normName, normSvc) {
@@ -245,7 +261,7 @@ function clean(str, maxLen = 500) {
 
 function normalizeFields(phone, name, service) {
   return {
-    normPhone: phone.replace(/\D/g, ''),
+    normPhone: phoneKey(phone.replace(/\D/g, '')),
     normName:  name.toLowerCase().trim().replace(/\s+/g, ' '),
     normSvc:   (service || 'general').toLowerCase().trim()
   };
@@ -253,8 +269,14 @@ function normalizeFields(phone, name, service) {
 
 // ─── Admin auth ───────────────────────────────────────────────────────────────
 function adminAuth(req, res, next) {
-  const key = req.headers['x-api-key'] || req.query.key;
-  if (!process.env.ADMIN_API_KEY || key !== process.env.ADMIN_API_KEY) {
+  const key      = req.headers['x-api-key'];
+  const expected = process.env.ADMIN_API_KEY;
+  const valid = expected && typeof key === 'string' &&
+    crypto.timingSafeEqual(
+      crypto.createHash('sha256').update(key).digest(),
+      crypto.createHash('sha256').update(expected).digest()
+    );
+  if (!valid) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
   next();
@@ -370,7 +392,7 @@ async function sendCustomerAcknowledgedEmail(enquiry) {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
+app.post('/api/enquiry', enquiryLimiter, wrap(async (req, res) => {
   const name        = clean(req.body.name);
   const email       = clean(req.body.email);
   const phone       = clean(req.body.phone);
@@ -387,7 +409,7 @@ app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
   }
 
-  if (!/^[0-9+\-\s]{7,15}$/.test(phone)) {
+  if (!/^[0-9+\-\s]{7,15}$/.test(phone) || phone.replace(/\D/g, '').length < 7) {
     return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
   }
 
@@ -423,11 +445,10 @@ app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
   await saveEnquiry(enquiry);
   console.log(`New enquiry: ${name} (${email})`);
 
-  const proto   = req.headers['x-forwarded-proto'] || req.protocol;
-  const host    = req.headers['x-forwarded-host']  || req.headers.host;
-  const ackUrl  = `${proto}://${host}/api/acknowledge?id=${enquiry.id}&token=${generateAckToken(enquiry.id)}`;
+  const baseUrl = SITE_URL || `${req.protocol}://${req.get('host')}`;
+  const ackUrl  = `${baseUrl}/api/acknowledge?id=${enquiry.id}&token=${generateAckToken(enquiry.id)}`;
 
-  sendEmailNotification(enquiry, ackUrl).catch(() => {});
+  await sendEmailNotification(enquiry, ackUrl);
 
   res.json({
     success: true,
@@ -435,10 +456,10 @@ app.post('/api/enquiry', enquiryLimiter, async (req, res) => {
     message: 'Thank you! Your enquiry has been received. We will contact you within 24 hours.',
     enquiryId: enquiry.id
   });
-});
+}));
 
 // Status check — public, rate-limited
-app.get('/api/status', statusLimiter, async (req, res) => {
+app.get('/api/status', statusLimiter, wrap(async (req, res) => {
   const { ref, phone, name, service } = req.query;
 
   let enquiry = null;
@@ -469,10 +490,10 @@ app.get('/api/status', statusLimiter, async (req, res) => {
       acknowledgedAt: enquiry.acknowledgedAt || null,
     }
   });
-});
+}));
 
 // Acknowledge — clicked from email by site owner
-app.get('/api/acknowledge', async (req, res) => {
+app.get('/api/acknowledge', wrap(async (req, res) => {
   const { id, token } = req.query;
 
   if (!id || !token) {
@@ -493,20 +514,20 @@ app.get('/api/acknowledge', async (req, res) => {
   }
 
   await acknowledgeEnquiry(id);
-  sendCustomerAcknowledgedEmail(enquiry).catch(() => {});
+  await sendCustomerAcknowledgedEmail(enquiry);
 
   res.send(ackHtml(
     'Acknowledged!',
     `Enquiry from <strong>${enquiry.name}</strong> (${enquiry.service}) has been marked as acknowledged. A notification has been sent to ${enquiry.email}.`,
     true
   ));
-});
+}));
 
 // Admin — protected
-app.get('/api/enquiries', adminAuth, async (req, res) => {
+app.get('/api/enquiries', adminAuth, wrap(async (req, res) => {
   const enquiries = await getAllEnquiries();
   res.json({ success: true, data: enquiries, total: enquiries.length });
-});
+}));
 
 app.get('/api/contact', (req, res) => {
   res.json({
@@ -523,6 +544,10 @@ app.get('/track', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'track.html'));
 });
 
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: 'Not found.' });
+});
+
 // Catch-all — serve frontend SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -531,6 +556,12 @@ app.get('*', (req, res) => {
 // ─── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err.message);
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ success: false, message: 'Invalid request body.' });
+  }
+  if (err.status === 403) {
+    return res.status(403).json({ success: false, message: 'Forbidden.' });
+  }
   res.status(500).json({ success: false, message: 'Something went wrong.' });
 });
 

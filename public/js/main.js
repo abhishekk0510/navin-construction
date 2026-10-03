@@ -8,11 +8,11 @@
 
     document.querySelectorAll('[data-ci-href]').forEach(el => {
       const t = el.getAttribute('data-ci-href');
-      if (t === 'tel1')    el.href = `tel:+${ci.phone1}`;
-      if (t === 'tel2')    el.href = `tel:+${ci.phone2}`;
-      if (t === 'wa1')     el.href = `https://wa.me/${ci.phone1}`;
-      if (t === 'wa1-msg') el.href = `https://wa.me/${ci.phone1}?text=${WA_MSG}`;
-      if (t === 'ig')      el.href = `https://www.instagram.com/${ci.instagram}`;
+      if (t === 'tel1'    && ci.phone1)    el.href = `tel:+${ci.phone1}`;
+      if (t === 'tel2'    && ci.phone2)    el.href = `tel:+${ci.phone2}`;
+      if (t === 'wa1'     && ci.phone1)    el.href = `https://wa.me/${ci.phone1}`;
+      if (t === 'wa1-msg' && ci.phone1)    el.href = `https://wa.me/${ci.phone1}?text=${WA_MSG}`;
+      if (t === 'ig'      && ci.instagram) el.href = `https://www.instagram.com/${ci.instagram}`;
     });
 
     document.querySelectorAll('[data-ci-text]').forEach(el => {
@@ -306,7 +306,7 @@ function resetAuto() { clearInterval(autoSlide); startAuto(); }
 
 setupDots();
 startAuto();
-window.addEventListener('resize', () => { setupDots(); goTo(0); });
+window.addEventListener('resize', () => { setupDots(); goTo(currentIdx); });
 
 // ===========================
 // ENQUIRY FORM
