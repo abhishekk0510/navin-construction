@@ -259,6 +259,11 @@ function clean(str, maxLen = 500) {
   return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen);
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function normalizeFields(phone, name, service) {
   return {
     normPhone: phoneKey(phone.replace(/\D/g, '')),
@@ -306,9 +311,11 @@ function ackHtml(title, message, success) {
 }
 
 // ─── Email helpers ────────────────────────────────────────────────────────────
-async function sendEmailNotification(enquiry, ackUrl) {
+async function sendEmailNotification(enquiry, ackUrl, isUpdate = false) {
   if (!process.env.NOTIFY_EMAIL || !process.env.GMAIL_APP_PASSWORD) return;
   try {
+    const title = isUpdate ? 'Enquiry Updated (New Message)' : 'New Enquiry Received';
+    const submittedAt = new Date(enquiry.submittedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: { user: process.env.NOTIFY_EMAIL, pass: process.env.GMAIL_APP_PASSWORD }
@@ -316,33 +323,49 @@ async function sendEmailNotification(enquiry, ackUrl) {
     await transporter.sendMail({
       from: `"Navin Construction Website" <${process.env.NOTIFY_EMAIL}>`,
       to: process.env.NOTIFY_EMAIL,
-      subject: `New Enquiry from ${enquiry.name} – ${enquiry.service}`,
+      replyTo: enquiry.email,
+      subject: `${isUpdate ? 'Updated Enquiry' : 'New Enquiry'} from ${enquiry.name} (${enquiry.phone}) – ${enquiry.service}`,
+      text: [
+        title,
+        `Name: ${enquiry.name}`,
+        `Phone: ${enquiry.phone}`,
+        `Email: ${enquiry.email}`,
+        `Service: ${enquiry.service}`,
+        `Budget: ${enquiry.budget}`,
+        `Project Location / Area: ${enquiry.projectType}`,
+        `Message: ${enquiry.message}`,
+        `Submitted: ${submittedAt}`,
+        `Status: ${enquiry.status}`,
+        `Enquiry ID: ${enquiry.id}`,
+        `Mark as acknowledged: ${ackUrl}`
+      ].join('\n'),
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden">
           <div style="background:#1a2b4a;padding:24px;text-align:center">
-            <h2 style="color:#c9a84c;margin:0">New Enquiry Received</h2>
+            <h2 style="color:#c9a84c;margin:0">${title}</h2>
             <p style="color:#fff;margin:4px 0 0">Navin Developer &amp; Construction</p>
           </div>
           <div style="padding:24px">
             <table style="width:100%;border-collapse:collapse">
-              <tr><td style="padding:8px;font-weight:bold;width:140px;color:#555">Name</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.name}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Phone</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.phone}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Email</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.email}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Service</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.service}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Budget</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.budget}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Location</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.projectType}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Message</td><td style="padding:8px;border-bottom:1px solid #eee">${enquiry.message}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;color:#555">Time</td><td style="padding:8px">${new Date(enquiry.submittedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;width:140px;color:#555">Name</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(enquiry.name)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Phone</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="tel:${escapeHtml(enquiry.phone.replace(/[^\d+]/g, ''))}" style="color:#1a2b4a;font-weight:bold">${escapeHtml(enquiry.phone)}</a></td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Email</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="mailto:${escapeHtml(enquiry.email)}" style="color:#1a2b4a">${escapeHtml(enquiry.email)}</a></td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Service</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(enquiry.service)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Budget</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(enquiry.budget)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Project Location / Area</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(enquiry.projectType)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Message</td><td style="padding:8px;border-bottom:1px solid #eee;white-space:pre-wrap">${escapeHtml(enquiry.message)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Status</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(enquiry.status)}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;color:#555">Submitted</td><td style="padding:8px">${escapeHtml(submittedAt)}</td></tr>
             </table>
           </div>
           <div style="padding:0 24px 24px;text-align:center">
-            <a href="${ackUrl}" style="display:inline-block;background:#1a2b4a;color:#c9a84c;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;letter-spacing:0.5px">
+            <a href="${escapeHtml(ackUrl)}" style="display:inline-block;background:#1a2b4a;color:#c9a84c;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;letter-spacing:0.5px">
               &#x2713; Mark as Acknowledged
             </a>
-            <p style="margin-top:12px;font-size:12px;color:#888">Clicking this updates the status and notifies ${enquiry.name} that their enquiry has been seen.</p>
+            <p style="margin-top:12px;font-size:12px;color:#888">Clicking this updates the status and notifies ${escapeHtml(enquiry.name)} that their enquiry has been seen.</p>
           </div>
           <div style="background:#f5f5f5;padding:16px;text-align:center">
-            <p style="margin:0;color:#888;font-size:13px">Enquiry ID: ${enquiry.id}</p>
+            <p style="margin:0;color:#888;font-size:13px">Enquiry ID: ${escapeHtml(enquiry.id)}</p>
           </div>
         </div>`
     });
@@ -371,12 +394,12 @@ async function sendCustomerAcknowledgedEmail(enquiry) {
           </div>
           <div style="padding:32px 24px;text-align:center">
             <div style="font-size:52px;margin-bottom:16px">&#x2705;</div>
-            <h3 style="color:#1a2b4a;margin-bottom:8px;font-family:Georgia,serif">Hello ${enquiry.name},</h3>
-            <p style="color:#555;line-height:1.6">Your construction enquiry for <strong>${enquiry.service}</strong> has been seen and acknowledged by Navin ji.</p>
+            <h3 style="color:#1a2b4a;margin-bottom:8px;font-family:Georgia,serif">Hello ${escapeHtml(enquiry.name)},</h3>
+            <p style="color:#555;line-height:1.6">Your construction enquiry for <strong>${escapeHtml(enquiry.service)}</strong> has been seen and acknowledged by Navin ji.</p>
             <p style="color:#555;line-height:1.6;margin-top:8px">You can expect a call <strong>within 24 hours</strong> to discuss your project and schedule a free site visit.</p>
             <div style="background:#f9f6f0;border-left:4px solid #c9a84c;padding:12px 16px;text-align:left;margin:20px auto;border-radius:4px;max-width:360px">
               <p style="margin:0;font-size:13px;color:#777">Reference ID:</p>
-              <p style="margin:4px 0 0;font-size:14px;font-weight:bold;color:#333;font-family:monospace">${enquiry.id}</p>
+              <p style="margin:4px 0 0;font-size:14px;font-weight:bold;color:#333;font-family:monospace">${escapeHtml(enquiry.id)}</p>
             </div>
           </div>
           <div style="background:#1a2b4a;padding:16px;text-align:center">
@@ -416,11 +439,15 @@ app.post('/api/enquiry', enquiryLimiter, wrap(async (req, res) => {
   const { normPhone, normName, normSvc } = normalizeFields(phone, name, service);
   const uniqueKey = `${normPhone}|${normName}|${normSvc}`;
 
+  const baseUrl = SITE_URL || `${req.protocol}://${req.get('host')}`;
+
   // Deduplicate within 24-hour window
   const existing = await findByUniqueKey(uniqueKey);
   if (existing) {
     if (message !== existing.message) {
       await updateEnquiryMessage(existing.id, message);
+      const ackUrl = `${baseUrl}/api/acknowledge?id=${existing.id}&token=${generateAckToken(existing.id)}`;
+      await sendEmailNotification({ ...existing, message }, ackUrl, true);
     }
     return res.json({
       success: true,
@@ -445,7 +472,6 @@ app.post('/api/enquiry', enquiryLimiter, wrap(async (req, res) => {
   await saveEnquiry(enquiry);
   console.log(`New enquiry: ${name} (${email})`);
 
-  const baseUrl = SITE_URL || `${req.protocol}://${req.get('host')}`;
   const ackUrl  = `${baseUrl}/api/acknowledge?id=${enquiry.id}&token=${generateAckToken(enquiry.id)}`;
 
   await sendEmailNotification(enquiry, ackUrl);
