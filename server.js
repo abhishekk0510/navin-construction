@@ -259,6 +259,9 @@ function clean(str, maxLen = 500) {
   return str.replace(/[<>"'`]/g, '').trim().slice(0, maxLen);
 }
 
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+const PHONE_RE = /^\+?[0-9\s-]+$/;
+
 function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -417,8 +420,8 @@ async function sendCustomerAcknowledgedEmail(enquiry) {
 
 app.post('/api/enquiry', enquiryLimiter, wrap(async (req, res) => {
   const name        = clean(req.body.name);
-  const email       = clean(req.body.email);
-  const phone       = clean(req.body.phone);
+  const email       = clean(req.body.email, 254);
+  const phone       = clean(req.body.phone, 20);
   const service     = clean(req.body.service);
   const message     = clean(req.body.message, 2000);
   const projectType = clean(req.body.projectType);
@@ -428,11 +431,11 @@ app.post('/api/enquiry', enquiryLimiter, wrap(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Please fill all required fields.' });
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!EMAIL_RE.test(email) || email.split('@')[0].length > 64) {
     return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
   }
 
-  if (!/^[0-9+\-\s]{7,15}$/.test(phone) || phone.replace(/\D/g, '').length < 7) {
+  if (!PHONE_RE.test(phone) || !/^\d{7,15}$/.test(phone.replace(/\D/g, ''))) {
     return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
   }
 

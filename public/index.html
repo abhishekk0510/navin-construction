@@ -689,13 +689,13 @@
               </div>
               <div class="form-group">
                 <label for="phone"><span data-i18n="form.phone">Phone / WhatsApp</span> <span class="req">*</span></label>
-                <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" data-i18n-ph="form.ph.phone" required />
+                <input type="tel" id="phone" name="phone" maxlength="20" inputmode="tel" placeholder="+91 XXXXX XXXXX" data-i18n-ph="form.ph.phone" required />
                 <span class="error-msg" id="phoneError"></span>
               </div>
             </div>
             <div class="form-group">
               <label for="email"><span data-i18n="form.email">Email Address</span> <span class="req">*</span></label>
-              <input type="email" id="email" name="email" placeholder="your@email.com" data-i18n-ph="form.ph.email" required />
+              <input type="email" id="email" name="email" maxlength="254" placeholder="your@email.com" data-i18n-ph="form.ph.email" required />
               <span class="error-msg" id="emailError"></span>
             </div>
             <div class="form-row">

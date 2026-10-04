@@ -322,7 +322,7 @@ function validate() {
   const fields = [
     { id: 'name', errorId: 'nameError', msg: 'Please enter your full name.' },
     { id: 'email', errorId: 'emailError', msg: 'Please enter a valid email address.', type: 'email' },
-    { id: 'phone', errorId: 'phoneError', msg: 'Please enter your phone number.' },
+    { id: 'phone', errorId: 'phoneError', msg: 'Please enter a valid phone number (7–15 digits).', type: 'phone' },
     { id: 'message', errorId: 'messageError', msg: 'Please describe your project.' }
   ];
 
@@ -334,7 +334,12 @@ function validate() {
     let ok = val.length > 0;
 
     if (f.type === 'email') {
-      ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      ok = val.length <= 254 && val.split('@')[0].length <= 64 &&
+        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(val);
+    }
+
+    if (f.type === 'phone') {
+      ok = /^\+?[0-9\s-]+$/.test(val) && /^\d{7,15}$/.test(val.replace(/\D/g, ''));
     }
 
     if (!ok) {
